@@ -27,9 +27,13 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
     const { email, password } = req.body
     const user = await findUserByEmail(email)
+
+    if (!user) {
+        return next(createError(401, "Invalid credentials"))
+    }
     const isMatch = await bcrypt.compare(password, user.password)
 
-    if (!user || !isMatch) {
+    if (!isMatch) {
         return next(createError(401, "Invalid credentials"))
     }
 
@@ -53,5 +57,11 @@ export const getMe = (req, res) => {
         name,
         email,
         role
+    })
+}
+
+export const logout = async (req, res) => {
+    res.status(200).json({
+        message: "Logout successfully"
     })
 }
