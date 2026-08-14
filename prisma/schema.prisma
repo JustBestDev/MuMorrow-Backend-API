@@ -1,0 +1,173 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BirthDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  birthDate DateTime @db.Date
+  role      Role     @default(USER)
+
+  fortuneHistories FortuneHistory[]
+  favorites        Favorite[]
+  reviews          Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DailyHoroscope {
+  id            Int      @id @default(autoincrement())
+  horoscopeDate DateTime @db.Date
+  birthDay      BirthDay
+
+  work    String @db.Text
+  finance String @db.Text
+  love    String @db.Text
+  health  String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([horoscopeDate, birthDay])
+}
+
+model Temple {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String  @db.Text
+  province    String
+  address     String  @db.Text
+  latitude    Decimal @db.Decimal(10, 7)
+  longitude   Decimal @db.Decimal(10, 7)
+  imageUrl    String?
+
+  categories TempleCategory[]
+
+  fortuneSticks  FortuneStick[]
+  fortuneHistory FortuneHistory[]
+  favorites      Favorite[]
+  reviews        Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([province])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  temples TempleCategory[]
+}
+
+model TempleCategory {
+  templeId   Int
+  categoryId Int
+
+  temple Temple @relation(fields: [templeId], references: [id], onDelete: Cascade)
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([templeId, categoryId])
+}
+
+model FortuneStick {
+  id          Int     @id @default(autoincrement())
+  templeId    Int
+  stickNumber Int
+  title       String?
+  prediction  String  @db.Text
+
+  temple Temple @relation(fields: [templeId], references: [id])
+
+  histories FortuneHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([templeId, stickNumber])
+  @@index([templeId])
+}
+
+model FortuneHistory {
+  id             Int @id @default(autoincrement())
+  userId         Int
+  templeId       Int
+  fortuneStickId Int
+
+  predictionSnapshot String @db.Text
+
+  user User @relation(fields: [userId], references: [id])
+
+  temple Temple @relation(fields: [templeId], references: [id])
+
+  fortuneStick FortuneStick @relation(fields: [fortuneStickId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([templeId])
+  @@index([fortuneStickId])
+}
+
+model Favorite {
+  userId   Int
+  templeId Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  temple Temple @relation(fields: [templeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, templeId])
+  @@index([templeId])
+}
+
+model Review {
+  id       Int @id @default(autoincrement())
+  userId   Int
+  templeId Int
+
+  rating  Int
+  comment String @db.Text
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  temple Temple @relation(fields: [templeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, templeId])
+  @@index([templeId])
+}
