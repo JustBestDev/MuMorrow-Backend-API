@@ -1,4 +1,8 @@
-import { findAllTemples } from "../services/temple.service.js";
+import createError from "http-errors";
+import {
+  findAllTemples,
+  findTempleById,
+} from "../services/temple.service.js";
 
 export const getTemples = async (req, res, next) => {
   try {
@@ -6,6 +10,30 @@ export const getTemples = async (req, res, next) => {
     const temples = await findAllTemples({ search, province, category });
 
     res.status(200).json({ temples });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTempleById = async (req, res, next) => {
+  try {
+    const templeId = Number(req.params.templeId);
+
+    if (
+      !Number.isSafeInteger(templeId) ||
+      templeId <= 0 ||
+      templeId > 2147483647
+    ) {
+      return next(createError(400, "Invalid templeId"));
+    }
+
+    const temple = await findTempleById(templeId);
+
+    if (!temple) {
+      return next(createError(404, "Temple not found"));
+    }
+
+    res.status(200).json({ temple });
   } catch (error) {
     next(error);
   }
