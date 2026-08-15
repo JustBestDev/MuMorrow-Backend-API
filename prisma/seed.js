@@ -1,5 +1,14 @@
 import { prisma } from "../src/lib/prisma.js";
 
+const categories = [
+  "โชคลาภ",
+  "การงาน",
+  "การเงิน",
+  "ความรัก",
+  "การเรียน",
+  "สุขภาพ",
+];
+
 const temples = [
   {
     name: "วัดพระศรีรัตนศาสดาราม (วัดพระแก้ว)",
@@ -39,7 +48,38 @@ const temples = [
   },
 ];
 
-async function main() {
+const templeCategoryData = [
+  {
+    templeName: "วัดพระศรีรัตนศาสดาราม (วัดพระแก้ว)",
+    categories: ["โชคลาภ", "การงาน"],
+  },
+  {
+    templeName: "วัดอรุณราชวรารามราชวรมหาวิหาร",
+    categories: ["ความรัก", "การเงิน"],
+  },
+  {
+    templeName: "วัดพระธาตุดอยสุเทพราชวรวิหาร",
+    categories: ["การเรียน", "สุขภาพ"],
+  },
+  {
+    templeName: "วัดใหญ่ชัยมงคล",
+    categories: ["โชคลาภ", "การงาน", "สุขภาพ"],
+  },
+];
+
+async function seedCategories() {
+  for (const name of categories) {
+    await prisma.category.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+  }
+
+  console.log(`Seeded ${categories.length} categories successfully`);
+}
+
+async function seedTemples() {
   for (const temple of temples) {
     await prisma.temple.upsert({
       where: { name: temple.name },
@@ -49,6 +89,58 @@ async function main() {
   }
 
   console.log(`Seeded ${temples.length} temples successfully`);
+}
+
+async function seedTempleCategories() {
+  let relationCount = 0;
+
+  for (const { templeName, categories: categoryNames } of templeCategoryData) {
+    const temple = await prisma.temple.findUnique({
+      where: { name: templeName },
+    });
+
+    if (!temple) {
+      throw new Error(
+        `Cannot seed TempleCategory: temple "${templeName}" not found`,
+      );
+    }
+
+    for (const categoryName of categoryNames) {
+      const category = await prisma.category.findUnique({
+        where: { name: categoryName },
+      });
+
+      if (!category) {
+        throw new Error(
+          `Cannot seed TempleCategory: category "${categoryName}" not found for temple "${templeName}"`,
+        );
+      }
+
+      await prisma.templeCategory.upsert({
+        where: {
+          templeId_categoryId: {
+            templeId: temple.id,
+            categoryId: category.id,
+          },
+        },
+        update: {},
+        create: {
+          templeId: temple.id,
+          categoryId: category.id,
+        },
+      });
+
+      relationCount += 1;
+    }
+  }
+
+  console.log(`Seeded ${relationCount} temple categories successfully`);
+}
+
+async function main() {
+  await seedCategories();
+  await seedTemples();
+  await seedTempleCategories();
 }
 
 main()
