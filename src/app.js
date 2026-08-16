@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/errorHandler.js'
 import categoryRoute from './routes/categories.route.js'
 import fortuneHistoryRoute from './routes/fortuneHistory.route.js'
 import favoriteRoute from './routes/favorites.route.js'
+import reviewRoute, { ownReviewRoute } from './routes/reviews.route.js'
 
 const app = express()
 
@@ -18,11 +19,12 @@ app.get('/test', (req, res) => {
 
 app.use('/auth', authRoute)
 app.use('/daily-horoscopes', dailyHoroscopeRoute)
+app.use('/temples', reviewRoute)
+app.use('/reviews', ownReviewRoute)
 app.use('/temples', templeRoute)
 app.use('/categories', categoryRoute)
 app.use('/fortune-histories', fortuneHistoryRoute)
 app.use('/favorites', favoriteRoute)
-// app.use('/reviews')
 
 app.use(partNotFound)
 

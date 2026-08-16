@@ -1,15 +1,19 @@
 import createError from "http-errors";
 
-export const parseTempleId = (value) => {
-  const templeId = Number(value);
+const parsePositiveIntId = (value, fieldName) => {
+  const id = Number(value);
 
   if (
-    !Number.isSafeInteger(templeId) ||
-    templeId <= 0 ||
-    templeId > 2147483647
+    !Number.isSafeInteger(id) ||
+    id <= 0 ||
+    id > 2147483647
   ) {
-    throw createError(400, "Invalid templeId");
+    throw createError(400, `Invalid ${fieldName}`);
   }
 
-  return templeId;
+  return id;
 };
+
+export const parseTempleId = (value) => parsePositiveIntId(value, "templeId");
+
+export const parseReviewId = (value) => parsePositiveIntId(value, "reviewId");
