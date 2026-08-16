@@ -4,6 +4,7 @@ import dailyHoroscopeRoute from './routes/daily.horoscopes.route.js'
 import templeRoute from './routes/temples.route.js'
 import { partNotFound } from './middlewares/pathNotFound.middleware.js'
 import { errorHandler } from './middlewares/errorHandler.js'
+import categoryRoute from './routes/categories.route.js'
 
 const app = express()
 
@@ -16,7 +17,7 @@ app.get('/test', (req, res) => {
 app.use('/auth', authRoute)
 app.use('/daily-horoscopes', dailyHoroscopeRoute)
 app.use('/temples', templeRoute)
-// app.use('/categories',)
+app.use('/categories', categoryRoute)
 // app.use('/fortune-histories',)
 // app.use('/favorites')
 // app.use('/reviews')
