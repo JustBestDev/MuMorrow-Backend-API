@@ -4,20 +4,7 @@ import {
   findAllTemples,
   findTempleById,
 } from "../services/temple.service.js";
-
-const parseTempleId = (value) => {
-  const templeId = Number(value);
-
-  if (
-    !Number.isSafeInteger(templeId) ||
-    templeId <= 0 ||
-    templeId > 2147483647
-  ) {
-    throw createError(400, "Invalid templeId");
-  }
-
-  return templeId;
-};
+import { parseTempleId } from "../utils/parseTempleId.js";
 
 export const getTemples = async (req, res, next) => {
   try {

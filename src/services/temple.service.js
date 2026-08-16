@@ -1,7 +1,7 @@
 import createError from "http-errors";
 import { prisma } from "../lib/prisma.js";
 
-const templeSelect = {
+export const templeSelect = {
   id: true,
   name: true,
   province: true,
@@ -21,7 +21,7 @@ const templeSelect = {
   },
 };
 
-const formatTemple = (temple) => ({
+export const formatTemple = (temple) => ({
   ...temple,
   latitude: Number(temple.latitude),
   longitude: Number(temple.longitude),
