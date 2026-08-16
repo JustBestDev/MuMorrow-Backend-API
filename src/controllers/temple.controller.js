@@ -1,8 +1,23 @@
 import createError from "http-errors";
 import {
+  drawTempleFortune,
   findAllTemples,
   findTempleById,
 } from "../services/temple.service.js";
+
+const parseTempleId = (value) => {
+  const templeId = Number(value);
+
+  if (
+    !Number.isSafeInteger(templeId) ||
+    templeId <= 0 ||
+    templeId > 2147483647
+  ) {
+    throw createError(400, "Invalid templeId");
+  }
+
+  return templeId;
+};
 
 export const getTemples = async (req, res, next) => {
   try {
@@ -17,15 +32,7 @@ export const getTemples = async (req, res, next) => {
 
 export const getTempleById = async (req, res, next) => {
   try {
-    const templeId = Number(req.params.templeId);
-
-    if (
-      !Number.isSafeInteger(templeId) ||
-      templeId <= 0 ||
-      templeId > 2147483647
-    ) {
-      return next(createError(400, "Invalid templeId"));
-    }
+    const templeId = parseTempleId(req.params.templeId);
 
     const temple = await findTempleById(templeId);
 
@@ -34,6 +41,17 @@ export const getTempleById = async (req, res, next) => {
     }
 
     res.status(200).json({ temple });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const drawFortuneStick = async (req, res, next) => {
+  try {
+    const templeId = parseTempleId(req.params.templeId);
+    const fortune = await drawTempleFortune(templeId, req.user.id);
+
+    res.status(200).json({ fortune });
   } catch (error) {
     next(error);
   }

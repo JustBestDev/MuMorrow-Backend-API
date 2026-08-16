@@ -1,3 +1,4 @@
+import createError from "http-errors";
 import { prisma } from "../lib/prisma.js";
 
 const templeSelect = {
@@ -68,4 +69,43 @@ export const findTempleById = async (id) => {
   });
 
   return temple ? formatTemple(temple) : null;
+};
+
+export const drawTempleFortune = async (templeId, userId) => {
+  const temple = await prisma.temple.findUnique({
+    where: { id: templeId },
+    select: { id: true },
+  });
+
+  if (!temple) {
+    throw createError(404, "Temple not found");
+  }
+
+  const fortuneSticks = await prisma.fortuneStick.findMany({
+    where: { templeId },
+    select: {
+      id: true,
+      stickNumber: true,
+      title: true,
+      prediction: true,
+    },
+  });
+
+  if (fortuneSticks.length === 0) {
+    throw createError(404, "Fortune sticks not found for this temple");
+  }
+
+  const randomIndex = Math.floor(Math.random() * fortuneSticks.length);
+  const fortuneStick = fortuneSticks[randomIndex];
+
+  await prisma.fortuneHistory.create({
+    data: {
+      userId,
+      templeId,
+      fortuneStickId: fortuneStick.id,
+      predictionSnapshot: fortuneStick.prediction,
+    },
+  });
+
+  return fortuneStick;
 };
