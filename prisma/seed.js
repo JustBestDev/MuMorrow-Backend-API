@@ -102,6 +102,57 @@ const fortuneStickData = {
   ],
 };
 
+const reviewData = [
+  {
+    userEmail: "test@example.com",
+    templeName: "วัดพระศรีรัตนศาสดาราม (วัดพระแก้ว)",
+    rating: 5,
+    comment: "พระอุโบสถและรายละเอียดสถาปัตยกรรมสวยงามมาก บรรยากาศเป็นระเบียบ เหมาะกับการมาสักการะ",
+  },
+  {
+    userEmail: "test2@example.com",
+    templeName: "วัดพระศรีรัตนศาสดาราม (วัดพระแก้ว)",
+    rating: 4,
+    comment: "สถานที่งดงามและมีจุดให้เรียนรู้ประวัติศาสตร์หลายจุด แนะนำให้มาเช้าเพราะช่วงสายคนค่อนข้างเยอะ",
+  },
+  {
+    userEmail: "test@example.com",
+    templeName: "วัดอรุณราชวรารามราชวรมหาวิหาร",
+    rating: 5,
+    comment: "วิวริมแม่น้ำสวยมาก พระปรางค์โดดเด่นและถ่ายรูปได้หลายมุม เดินทางด้วยเรือสะดวก",
+  },
+  {
+    userEmail: "test2@example.com",
+    templeName: "วัดอรุณราชวรารามราชวรมหาวิหาร",
+    rating: 4,
+    comment: "บรรยากาศดีและพื้นที่ดูแลสะอาด ช่วงบ่ายแดดค่อนข้างแรง ควรเตรียมหมวกหรือน้ำดื่มไปด้วย",
+  },
+  {
+    userEmail: "test@example.com",
+    templeName: "วัดพระธาตุดอยสุเทพราชวรวิหาร",
+    rating: 5,
+    comment: "บรรยากาศสงบและมองเห็นวิวเมืองเชียงใหม่ได้กว้าง การขึ้นบันไดเหนื่อยนิดหน่อยแต่คุ้มค่า",
+  },
+  {
+    userEmail: "test2@example.com",
+    templeName: "วัดพระธาตุดอยสุเทพราชวรวิหาร",
+    rating: 3,
+    comment: "องค์พระธาตุสวยและน่าเคารพ แต่วันหยุดรถติดและหาที่จอดค่อนข้างยาก ควรเผื่อเวลาเดินทาง",
+  },
+  {
+    userEmail: "test@example.com",
+    templeName: "วัดใหญ่ชัยมงคล",
+    rating: 4,
+    comment: "พื้นที่กว้างและมีมุมประวัติศาสตร์น่าสนใจ เดินชมได้เพลิน เหมาะกับการมาเที่ยวพร้อมครอบครัว",
+  },
+  {
+    userEmail: "test2@example.com",
+    templeName: "วัดใหญ่ชัยมงคล",
+    rating: 5,
+    comment: "เจดีย์ใหญ่สง่างาม บรรยากาศร่มรื่นและสงบ มีจุดให้ไหว้พระและถ่ายภาพอย่างเหมาะสม",
+  },
+];
+
 async function seedCategories() {
   for (const name of categories) {
     await prisma.category.upsert({
@@ -211,11 +262,57 @@ async function seedFortuneSticks() {
   console.log(`Seeded ${fortuneStickCount} fortune sticks successfully`);
 }
 
+async function seedReviews() {
+  for (const review of reviewData) {
+    const user = await prisma.user.findUnique({
+      where: { email: review.userEmail },
+    });
+
+    if (!user) {
+      throw new Error(
+        `Cannot seed Review: user "${review.userEmail}" not found`,
+      );
+    }
+
+    const temple = await prisma.temple.findUnique({
+      where: { name: review.templeName },
+    });
+
+    if (!temple) {
+      throw new Error(
+        `Cannot seed Review: temple "${review.templeName}" not found for user "${review.userEmail}"`,
+      );
+    }
+
+    await prisma.review.upsert({
+      where: {
+        userId_templeId: {
+          userId: user.id,
+          templeId: temple.id,
+        },
+      },
+      update: {
+        rating: review.rating,
+        comment: review.comment,
+      },
+      create: {
+        userId: user.id,
+        templeId: temple.id,
+        rating: review.rating,
+        comment: review.comment,
+      },
+    });
+  }
+
+  console.log(`Seeded ${reviewData.length} reviews successfully`);
+}
+
 async function main() {
   await seedCategories();
   await seedTemples();
   await seedTempleCategories();
   await seedFortuneSticks();
+  await seedReviews();
 }
 
 main()
