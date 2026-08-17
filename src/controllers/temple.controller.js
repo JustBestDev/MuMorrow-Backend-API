@@ -2,6 +2,7 @@ import createError from "http-errors";
 import {
   drawTempleFortune,
   findAllTemples,
+  findPopularTemples,
   findTempleById,
 } from "../services/temple.service.js";
 import { parseTempleId } from "../utils/parseTempleId.js";
@@ -10,6 +11,16 @@ export const getTemples = async (req, res, next) => {
   try {
     const { search, province, category } = req.query;
     const temples = await findAllTemples({ search, province, category });
+
+    res.status(200).json({ temples });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPopularTemples = async (req, res, next) => {
+  try {
+    const temples = await findPopularTemples();
 
     res.status(200).json({ temples });
   } catch (error) {

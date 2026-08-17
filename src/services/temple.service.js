@@ -62,6 +62,38 @@ export const findAllTemples = async ({ search, province, category } = {}) => {
   return temples.map(formatTemple);
 };
 
+export const findPopularTemples = async () => {
+  const temples = await prisma.temple.findMany({
+    take: 6,
+    select: {
+      id: true,
+      name: true,
+      province: true,
+      imageUrl: true,
+      _count: {
+        select: {
+          favorites: true,
+        },
+      },
+    },
+    orderBy: [
+      {
+        favorites: {
+          _count: "desc",
+        },
+      },
+      {
+        id: "asc",
+      },
+    ],
+  });
+
+  return temples.map(({ _count, ...temple }) => ({
+    ...temple,
+    favoriteCount: _count.favorites,
+  }));
+};
+
 export const findTempleById = async (id) => {
   const temple = await prisma.temple.findUnique({
     where: { id },
