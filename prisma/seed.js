@@ -77,7 +77,7 @@ export const temples = [
 
     longitude: 100.493038,
 
-    imageUrl: "IMAGE_URL_WAT_PHO",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjMf1nPTGPYQS34FKvG4WPEXniVLUoKDH6RgSMfgfp9w&s=10",
 
   },
 
@@ -99,7 +99,7 @@ export const temples = [
 
     longitude: 100.50838,
 
-    imageUrl: "IMAGE_URL_WAT_SAKET",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfPiYBHoBYtFX0Qqe5VZo90Xck-HlX_3SOuQV62RpVaQ&s=10",
 
   },
 
@@ -121,7 +121,7 @@ export const temples = [
 
     longitude: 100.514177,
 
-    imageUrl: "IMAGE_URL_WAT_BENCHAMABOPHIT",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRimcrg7552U2pWhlFnpvCBSNnJH_pOjx3ijQCUU--lnQ&s=10",
 
   },
 
@@ -167,7 +167,7 @@ export const temples = [
 
     longitude: 98.986674,
 
-    imageUrl: "IMAGE_URL_WAT_CHEDI_LUANG",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8NT3sl2rVrTmmPZHTOOHTsHwFPnbqJXwGGzX54OlvNA&s=10",
 
   },
 
@@ -189,7 +189,7 @@ export const temples = [
 
     longitude: 98.981688,
 
-    imageUrl: "IMAGE_URL_WAT_PHRA_SINGH",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTH2oz0fTtvfJXXgieILxoi04QJK-30Xur6C2AUykwofQ&s=10",
 
   },
 
@@ -211,7 +211,7 @@ export const temples = [
 
     longitude: 99.763333,
 
-    imageUrl: "IMAGE_URL_WAT_RONG_KHUN",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6u7ZORtUysc0B3OmsLk6cEJhw4xptV5GRh05vy0yMlw&s=10",
 
   },
 
@@ -233,7 +233,7 @@ export const temples = [
 
     longitude: 99.008828,
 
-    imageUrl: "IMAGE_URL_WAT_HARIPHUNCHAI",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXeJ7leRp5IIl2yS3UhHHgo7N_Mo2YdKZnMFUcbcXXkA&s=10",
 
   },
 
@@ -279,7 +279,7 @@ export const temples = [
 
     longitude: 100.568444,
 
-    imageUrl: "IMAGE_URL_WAT_MAHATHAT_AYUTTHAYA",
+    imageUrl: "https://www.wreathnawat.com/wp-content/uploads/2021/02/wat-mahathat-1-600x400.jpg",
 
   },
 
@@ -301,7 +301,7 @@ export const temples = [
 
     longitude: 100.558568,
 
-    imageUrl: "IMAGE_URL_WAT_PHRA_SI_SANPHET",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqeRTk_k9LLSYP0xFwHP9R8yXxx4gr9YU8L-btTCypyg&s=10",
 
   },
 
@@ -323,7 +323,7 @@ export const temples = [
 
     longitude: 100.541065,
 
-    imageUrl: "IMAGE_URL_WAT_CHAIWATTHANARAM",
+    imageUrl: "https://upload.wikimedia.org/wikipedia/commons/f/fc/Wat_Chaiwatthanaram_by_drone.jpg?utm_source=th.wikipedia.org&utm_campaign=index&utm_content=original",
 
   },
 
@@ -345,7 +345,7 @@ export const temples = [
 
     longitude: 104.723906,
 
-    imageUrl: "IMAGE_URL_WAT_PHRA_THAT_PHANOM",
+    imageUrl: "https://www.dhammathai.org/watthai/data/imagedb/17-2.jpg",
 
   },
 
@@ -367,7 +367,7 @@ export const temples = [
 
     longitude: 100.204345,
 
-    imageUrl: "IMAGE_URL_WAT_PHRA_THAT_CHO_HAE",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiWIrKFAd7ZJ1iTu4GV1jKbzI_vRBexKnxYbbZjfm29w&s=10",
 
   },
 
@@ -389,7 +389,7 @@ export const temples = [
 
     longitude: 99.966252,
 
-    imageUrl: "IMAGE_URL_WAT_PHRA_MAHATHAT_NST",
+    imageUrl: "https://s359.kapook.com/pagebuilder/601920a4-2fe6-4c6e-809c-6cf1390052be.jpg",
 
   },
 
@@ -411,7 +411,7 @@ export const temples = [
 
     longitude: 101.067877,
 
-    imageUrl: "IMAGE_URL_WAT_SOTHON",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgkHlOpaIieI-KkL4D3yzHMnRrP4WefktBeYYmImM_Mg&s=10",
 
   },
 
@@ -433,7 +433,7 @@ export const temples = [
 
     longitude: 100.060001,
 
-    imageUrl: "IMAGE_URL_PHRA_PATHOM_CHEDI",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuSXruF_F0MssI3GsRYQTcowdXmrhiyRKVq6KFR0ficw&s=10",
 
   },
 
@@ -455,7 +455,7 @@ export const temples = [
 
     longitude: 102.123056,
 
-    imageUrl: "IMAGE_URL_WAT_PA_PHU_KON",
+    imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC7sjIMIbRQaKkiwgu5wY6O9ulxAQOEDCLhVOMo3-XVg&s=10",
 
   },
 

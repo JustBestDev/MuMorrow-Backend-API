@@ -14,6 +14,7 @@ export const templeSelect = {
   _count: {
     select: {
       favorites: true,
+      fortuneSticks: true,
     },
   },
 
@@ -37,6 +38,7 @@ export const formatTemple = (temple) => {
     latitude: Number(temple.latitude),
     longitude: Number(temple.longitude),
     favoriteCount: _count?.favorites ?? 0,
+    hasFortuneSticks: (_count?.fortuneSticks ?? 0) > 0,
     categories: temple.categories.map(({ category }) => category),
   };
 };
@@ -137,7 +139,7 @@ export const drawTempleFortune = async (templeId, userId) => {
   });
 
   if (fortuneSticks.length === 0) {
-    throw createError(404, "Fortune sticks not found for this temple");
+    throw createError(404, "Fortune sticks are not available for this temple");
   }
 
   const randomIndex = Math.floor(Math.random() * fortuneSticks.length);
