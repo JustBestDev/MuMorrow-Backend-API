@@ -47,9 +47,9 @@ export const getTempleById = async (req, res, next) => {
 export const drawFortuneStick = async (req, res, next) => {
   try {
     const templeId = parseTempleId(req.params.templeId);
-    const fortune = await drawTempleFortune(templeId, req.user.id);
+    const history = await drawTempleFortune(templeId, req.user.id);
 
-    res.status(200).json({ fortune });
+    res.status(200).json({ history });
   } catch (error) {
     next(error);
   }

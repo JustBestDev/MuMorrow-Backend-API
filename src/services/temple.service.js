@@ -5,10 +5,18 @@ export const templeSelect = {
   id: true,
   name: true,
   province: true,
+  address: true,
   description: true,
   imageUrl: true,
   latitude: true,
   longitude: true,
+
+  _count: {
+    select: {
+      favorites: true,
+    },
+  },
+
   categories: {
     select: {
       category: {
@@ -21,12 +29,17 @@ export const templeSelect = {
   },
 };
 
-export const formatTemple = (temple) => ({
-  ...temple,
-  latitude: Number(temple.latitude),
-  longitude: Number(temple.longitude),
-  categories: temple.categories.map(({ category }) => category),
-});
+export const formatTemple = (temple) => {
+  const { _count, ...rest } = temple;
+
+  return {
+    ...rest,
+    latitude: Number(temple.latitude),
+    longitude: Number(temple.longitude),
+    favoriteCount: _count?.favorites ?? 0,
+    categories: temple.categories.map(({ category }) => category),
+  };
+};
 
 export const findAllTemples = async ({ search, province, category } = {}) => {
   const where = {};
@@ -106,7 +119,7 @@ export const findTempleById = async (id) => {
 export const drawTempleFortune = async (templeId, userId) => {
   const temple = await prisma.temple.findUnique({
     where: { id: templeId },
-    select: { id: true },
+    select: { id: true, name: true, imageUrl: true },
   });
 
   if (!temple) {
@@ -130,14 +143,27 @@ export const drawTempleFortune = async (templeId, userId) => {
   const randomIndex = Math.floor(Math.random() * fortuneSticks.length);
   const fortuneStick = fortuneSticks[randomIndex];
 
-  await prisma.fortuneHistory.create({
+  const history = await prisma.fortuneHistory.create({
     data: {
       userId,
       templeId,
       fortuneStickId: fortuneStick.id,
       predictionSnapshot: fortuneStick.prediction,
     },
+    select: {
+      id: true,
+      createdAt: true,
+    },
   });
 
-  return fortuneStick;
+  return {
+    ...history,
+    temple,
+    fortuneStick: {
+      id: fortuneStick.id,
+      stickNumber: fortuneStick.stickNumber,
+      title: fortuneStick.title,
+    },
+    prediction: fortuneStick.prediction,
+  };
 };

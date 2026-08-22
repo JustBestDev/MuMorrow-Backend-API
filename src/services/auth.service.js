@@ -1,28 +1,30 @@
 import { prisma } from "../lib/prisma.js"
 
 export const findUserByEmail = async (email) => {
-    const user = await prisma.user.findUnique({
-        where: { email: email }
-    })
-    return user
+    return prisma.user.findUnique({ where: { email } })
 }
 
 export const findUserById = async (id) => {
-    const user = await prisma.user.findFirst({
-        where: { id: id }
-    })
-    return user
+    return prisma.user.findFirst({ where: { id } })
 }
 
 export const createUser = async (email, hashPassword, name, birthDateObj) => {
-    const newUser = await prisma.user.create({
-        data: {
-            email,
-            password: hashPassword,
-            name,
-            birthDate: birthDateObj
-        }
+    return prisma.user.create({
+        data: { email, password: hashPassword, name, birthDate: birthDateObj }
     })
-    return newUser
 }
 
+export const updateUserProfile = async (id, name, birthDate) => {
+    return prisma.user.update({
+        where: { id },
+        data: { name, birthDate },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            birthDate: true,
+            role: true,
+            profileImageUrl: true
+        }
+    })
+}

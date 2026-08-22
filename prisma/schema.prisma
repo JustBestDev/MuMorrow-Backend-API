@@ -35,6 +35,8 @@ model User {
   birthDate DateTime @db.Date
   role      Role     @default(USER)
 
+  profileImageUrl String?
+
   fortuneHistories FortuneHistory[]
   favorites        Favorite[]
   reviews          Review[]
