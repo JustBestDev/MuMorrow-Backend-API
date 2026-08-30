@@ -22,10 +22,6 @@ app.use(
 
 app.use(express.json());
 
-app.get("/test", (req, res) => {
-  res.send("Hello from server");
-});
-
 app.use("/auth", authRoute);
 app.use("/daily-horoscopes", dailyHoroscopeRoute);
 app.use("/temples", reviewRoute);
