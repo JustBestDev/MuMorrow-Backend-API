@@ -1,99 +1,492 @@
-# MuMorrow — Backend API
+<div align="center">
 
-REST API and backend service for **MuMorrow**, a full-stack web application developed as an individual project.
+# 🔮 MuMorrow — Backend API
 
-This repository handles server-side application logic, authentication, data validation, and database access for the MuMorrow frontend application.
+**REST API for the MuMorrow temple discovery and digital fortune-stick platform.**
+
+Built with Node.js, Express, Prisma, and MySQL.
+
+**Individual Full-Stack Project**
+
+[Frontend Application](https://github.com/JustBestDev/MuMorrow-Frontend)
+
+</div>
+
+---
+
+## About MuMorrow
+
+**MuMorrow** is a Thai temple discovery platform that combines temple information with digital spiritual experiences.
+
+Users can discover temples, search and filter locations, save favorite temples, draw temple-specific digital fortune sticks (เซียมซี), and keep their fortune results as personal history.
+
+This repository provides the **REST API and database layer** for the MuMorrow application.
+
+---
+
+## Key Features
+
+### 🔐 Authentication
+
+MuMorrow provides JWT-based user authentication with:
+
+* User registration
+* Login
+* Current-user retrieval
+* Profile editing
+* Password hashing with bcrypt
+* JWT-protected endpoints
+* Role support (`USER`, `ADMIN`)
+
+Passwords are hashed before being stored in the database.
+
+### 🛕 Temple Management & Discovery API
+
+The API provides temple data including:
+
+* Temple name
+* Description
+* Province
+* Address
+* Geographic coordinates
+* Image
+* Categories
+* Favorite statistics
+
+Temple discovery supports:
+
+* Text search
+* Province filtering
+* Category filtering
+* Popular temple ranking
+
+### 🔮 Digital Fortune-Stick System
+
+Each temple can have its own collection of fortune sticks.
+
+An authenticated user can draw a fortune from a selected temple.
+
+The backend:
+
+1. Identifies the requested temple.
+2. Selects a temple fortune stick.
+3. Creates a personal fortune-history record.
+4. Stores a snapshot of the prediction.
+5. Returns the result to the frontend.
+
+The snapshot ensures historical results remain consistent even if the original fortune-stick content is edited later.
+
+### 📜 Fortune History
+
+Authenticated users can:
+
+* Retrieve their complete fortune history
+* Retrieve an individual historical result
+
+Each history record connects:
+
+```text
+User
+  │
+  ├── Temple
+  │
+  └── Fortune Stick
+```
+
+and stores the prediction snapshot shown at the time of the draw.
+
+### ❤️ Favorite Temples
+
+Users can:
+
+* Add a temple to favorites
+* Remove a temple from favorites
+* Retrieve their saved temples
+
+The database uses a composite user/temple relationship to prevent duplicate favorites.
+
+### ⭐ Temple Reviews
+
+The backend includes a review system where authenticated users can:
+
+* Create a temple review
+* Update their own review
+* Delete their own review
+
+Public users can retrieve reviews for a temple.
+
+Each review contains:
+
+* Rating from `1–5`
+* Comment
+* Author
+* Temple
+* Created and updated timestamps
+
+A user can have only one review per temple.
+
+### 🏷️ Temple Categories
+
+Temples support many-to-many categories through a join model.
+
+Categories can be retrieved through the public API and used by the frontend for temple filtering.
+
+---
+
+## API Endpoints
+
+The current API mounts its resources directly from the server root.
+
+### Authentication
+
+| Method  | Endpoint         | Authentication | Description            |
+| ------- | ---------------- | -------------- | ---------------------- |
+| `POST`  | `/auth/register` | Public         | Register a new account |
+| `POST`  | `/auth/login`    | Public         | Login and receive JWT  |
+| `POST`  | `/auth/logout`   | Required       | Logout endpoint        |
+| `GET`   | `/auth/me`       | Required       | Get current user       |
+| `PATCH` | `/auth/me`       | Required       | Update profile         |
+
+### Temples
+
+| Method | Endpoint                     | Authentication | Description              |
+| ------ | ---------------------------- | -------------- | ------------------------ |
+| `GET`  | `/temples`                   | Public         | Retrieve temples         |
+| `GET`  | `/temples/popular`           | Public         | Retrieve popular temples |
+| `GET`  | `/temples/:templeId`         | Public         | Retrieve temple details  |
+| `POST` | `/temples/:templeId/fortune` | Required       | Draw a fortune stick     |
+
+`GET /temples` supports query parameters:
+
+```text
+search
+province
+category
+```
+
+Example:
+
+```http
+GET /temples?search=พระแก้ว&province=กรุงเทพมหานคร&category=เสริมดวง
+```
+
+### Favorites
+
+| Method   | Endpoint                      | Authentication | Description                     |
+| -------- | ----------------------------- | -------------- | ------------------------------- |
+| `GET`    | `/favorites`                  | Required       | Get the user's favorite temples |
+| `POST`   | `/temples/:templeId/favorite` | Required       | Add temple to favorites         |
+| `DELETE` | `/temples/:templeId/favorite` | Required       | Remove temple from favorites    |
+
+### Fortune History
+
+| Method | Endpoint                        | Authentication | Description                   |
+| ------ | ------------------------------- | -------------- | ----------------------------- |
+| `GET`  | `/fortune-histories`            | Required       | Get user's fortune history    |
+| `GET`  | `/fortune-histories/:historyId` | Required       | Get individual history result |
+
+### Reviews
+
+| Method   | Endpoint                     | Authentication | Description            |
+| -------- | ---------------------------- | -------------- | ---------------------- |
+| `GET`    | `/temples/:templeId/reviews` | Public         | Get temple reviews     |
+| `POST`   | `/temples/:templeId/reviews` | Required       | Create a temple review |
+| `PATCH`  | `/reviews/:reviewId`         | Required       | Update own review      |
+| `DELETE` | `/reviews/:reviewId`         | Required       | Delete own review      |
+
+Review rating must be an integer between:
+
+```text
+1 – 5
+```
+
+### Categories
+
+| Method | Endpoint      | Authentication | Description                |
+| ------ | ------------- | -------------- | -------------------------- |
+| `GET`  | `/categories` | Public         | Retrieve temple categories |
+
+---
+
+## Current Development Note
+
+A route namespace for daily horoscopes currently exists:
+
+```text
+/daily-horoscopes
+```
+
+and the database contains the `DailyHoroscope` model.
+
+However, the current `/daily-horoscopes/today` route does not yet have an active controller handler, so this functionality is considered **in development** rather than a completed public API feature.
+
+---
+
+## Database Schema
+
+MuMorrow uses **Prisma ORM** with a MySQL-compatible database.
+
+### Main Models
+
+```text
+User
+Temple
+Category
+TempleCategory
+FortuneStick
+FortuneHistory
+Favorite
+Review
+DailyHoroscope
+```
+
+### Relationship Overview
+
+```text
+User
+ ├── FortuneHistory ── FortuneStick
+ │         │
+ │         └────────── Temple
+ │
+ ├── Favorite ──────── Temple
+ │
+ └── Review ────────── Temple
+
+
+Temple
+ ├── TempleCategory ── Category
+ ├── FortuneStick
+ ├── FortuneHistory
+ ├── Favorite
+ └── Review
+```
+
+### Important Constraints
+
+The schema includes database-level constraints such as:
+
+```text
+User.email                     UNIQUE
+Temple.name                    UNIQUE
+
+TempleCategory                 UNIQUE (templeId, categoryId)
+FortuneStick                   UNIQUE (templeId, stickNumber)
+Favorite                       UNIQUE (userId, templeId)
+Review                         UNIQUE (userId, templeId)
+
+DailyHoroscope                 UNIQUE (horoscopeDate, birthDay)
+```
+
+These constraints help preserve consistency in user favorites, reviews, fortune sticks, categories, and horoscope data.
+
+---
+
+## Backend Architecture
+
+```text
+MuMorrow-Backend-API/
+│
+├── prisma/
+│   ├── schema.prisma
+│   └── seed.js
+│
+├── src/
+│   ├── controllers/
+│   │   ├── auth.controller.js
+│   │   ├── categories.controller.js
+│   │   ├── favorite.controller.js
+│   │   ├── fortuneHistory.controller.js
+│   │   ├── review.controller.js
+│   │   └── temple.controller.js
+│   │
+│   ├── lib/
+│   │
+│   ├── middlewares/
+│   │
+│   ├── routes/
+│   │   ├── auth.route.js
+│   │   ├── categories.route.js
+│   │   ├── daily.horoscopes.route.js
+│   │   ├── favorites.route.js
+│   │   ├── fortuneHistory.route.js
+│   │   ├── reviews.route.js
+│   │   └── temples.route.js
+│   │
+│   ├── services/
+│   │   ├── auth.service.js
+│   │   ├── category.service.js
+│   │   ├── favorite.service.js
+│   │   ├── fortuneHistory.service.js
+│   │   ├── review.service.js
+│   │   └── temple.service.js
+│   │
+│   ├── utils/
+│   ├── app.js
+│   └── server.js
+│
+├── package.json
+├── prisma.config.ts
+└── README.md
+```
+
+---
+
+## Request Flow
+
+The backend separates HTTP handling from database operations.
+
+```text
+Client Request
+      │
+      ▼
+    Route
+      │
+      ▼
+ Middleware
+      │
+      ▼
+ Controller
+      │
+      ▼
+   Service
+      │
+      ▼
+ Prisma ORM
+      │
+      ▼
+    MySQL
+```
+
+This keeps routing, request handling, business logic, and database queries separated.
+
+---
 
 ## Tech Stack
 
+### Server
+
 * **Node.js**
 * **Express 5**
-* **JavaScript (ES Modules)**
-* **Prisma ORM**
-* **MariaDB**
-* **JWT (JSON Web Token)**
+* **JavaScript — ES Modules**
+
+### Database
+
+* **Prisma ORM 7**
+* **MySQL / MariaDB-compatible database**
+* **@prisma/adapter-mariadb**
+
+### Authentication & Security
+
+* **JSON Web Token**
 * **bcrypt**
-* **Zod**
 * **CORS**
+
+### Validation & Configuration
+
+* **Zod**
 * **dotenv**
 
-## Frontend Repository
+---
 
-The frontend application is maintained separately:
+## Authentication
 
-[MuMorrow Frontend](https://github.com/JustBestDev/MuMorrow-Frontend)
+Authenticated endpoints expect a JWT in the request header.
 
-## Backend Responsibilities
+```http
+Authorization: Bearer <token>
+```
 
-The backend is responsible for:
+### Authentication Flow
 
-* REST API endpoints
-* Application business logic
-* User authentication
-* Password hashing with bcrypt
-* JWT-based authorization
-* Request and data validation
-* Database access through Prisma ORM
-* Communication with the frontend application
+```text
+Email + Password
+      │
+      ▼
+Find User
+      │
+      ▼
+bcrypt Password Verification
+      │
+      ▼
+Generate JWT
+      │
+      ▼
+Return User + Token
+      │
+      ▼
+Protected Requests
+```
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-Make sure you have the following installed:
+Install:
 
 * Node.js
 * npm
-* MariaDB
+* MySQL or MariaDB
 
-### Installation
-
-Clone the repository:
+### Clone Repository
 
 ```bash
-git clone https://github.com/JustBestDev/MuMorrow.git
-cd MuMorrow
+git clone https://github.com/JustBestDev/MuMorrow-Backend-API.git
+cd MuMorrow-Backend-API
 ```
 
-Install dependencies:
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
+---
+
 ## Environment Variables
 
 Create a `.env` file in the project root.
 
-Example:
-
 ```env
-DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/DATABASE_NAME"
-JWT_SECRET="your-jwt-secret"
-PORT=8000
+DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/mumorrow"
+JWT_SECRET="your-secret-key"
+PORT=8899
 ```
 
-> Do not commit your real `.env` file or secret credentials to GitHub.
+Do not commit your real `.env` file or secrets to the repository.
 
-## Database Setup
+---
 
-Configure your database connection in `.env`, then initialize Prisma.
+## Prisma Setup
+
+Generate the Prisma client:
 
 ```bash
 npx prisma generate
 ```
 
-Run the database migration if migrations are included in the project:
+Run database migrations when required:
 
 ```bash
 npx prisma migrate dev
 ```
 
-You can inspect your database using Prisma Studio:
+Seed development data:
+
+```bash
+npx prisma db seed
+```
+
+Inspect database data:
 
 ```bash
 npx prisma studio
 ```
+
+The repository includes a dedicated `prisma/seed.js` file for populating development data.
+
+---
 
 ## Run Development Server
 
@@ -101,87 +494,91 @@ npx prisma studio
 npm run dev
 ```
 
-The development script runs the server using Node.js watch mode.
-
-## API Architecture
-
-The backend follows a separated server-side architecture where responsibilities can be organized into layers such as:
+The current frontend Axios configuration expects the backend at:
 
 ```text
-src/
-├── controllers/
-├── routes/
-├── services/
-├── middlewares/
-├── validations/
-├── utils/
-└── server.js
-
-prisma/
-├── schema.prisma
-└── migrations/
+http://localhost:8899
 ```
 
-This separation helps keep routing, business logic, validation, and database access maintainable as the application grows.
+So a typical `.env` configuration is:
 
-## Authentication
+```env
+PORT=8899
+```
 
-MuMorrow uses token-based authentication.
+---
 
-The authentication flow is designed around:
+## CORS
 
-1. User credentials are submitted to the API.
-2. Passwords are verified using `bcrypt`.
-3. The server generates a JSON Web Token.
-4. Protected endpoints validate the token before allowing access.
+During local development, the API currently accepts the frontend origin:
 
-Passwords should never be stored as plain text.
+```text
+http://localhost:5173
+```
 
-## Data Validation
+Allowed methods include:
 
-The API uses **Zod** for validating incoming application data before it reaches the main business logic.
+```text
+GET
+POST
+PUT
+PATCH
+DELETE
+```
 
-This helps keep API input predictable and reduces invalid data being persisted to the database.
+---
 
-## Database
+## Error Handling
 
-Database operations are managed using **Prisma ORM** with a **MariaDB** database.
+The Express application includes centralized handling for:
 
-Prisma provides:
+* Unknown routes
+* Application errors
 
-* Schema-based database modeling
-* Type-safe database queries
-* Database migrations
-* Prisma Studio for inspecting development data
+through:
+
+```text
+pathNotFound middleware
+        │
+        ▼
+central error handler
+```
+
+---
 
 ## Related Repository
 
-| Application | Repository                                                   |
-| ----------- | ------------------------------------------------------------ |
-| Frontend    | [MuMorrow Frontend](https://github.com/JustBestDev/MuMorrow-Frontend) |
-| Backend API | This repository                                              |
+The React client is maintained separately:
 
-## Development Focus
+**Frontend Application:**
+https://github.com/JustBestDev/MuMorrow-Frontend
 
-This project was created to practice and demonstrate backend and full-stack development concepts, including:
+---
+
+## Project Purpose
+
+MuMorrow was developed as an **individual full-stack project** to demonstrate:
 
 * REST API design
+* Relational database modeling
 * Authentication and authorization
 * Password security
-* Database modeling
-* ORM-based database access
-* Request validation
+* Prisma ORM
+* Service/controller architecture
+* Many-to-many relationships
+* Composite database constraints
+* Search and filtering
+* Personalized user data
 * Frontend/backend integration
-* Environment-based configuration
+* End-to-end full-stack application development
+
+---
 
 ## Author
 
 **Takdanai (Best)**
 
-Computer Engineering graduate and Full-Stack JavaScript developer.
+Computer Engineering graduate
+Full-Stack JavaScript Developer
 
-GitHub: [JustBestDev](https://github.com/JustBestDev)
-
----
-
-This project was developed as an **individual full-stack project**.
+GitHub: https://github.com/JustBestDev
